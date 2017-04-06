@@ -1,0 +1,45 @@
+	
+bool BellmanFord(int s,int t,int& flow, int & cost){
+
+    dis[s] = 0;
+    vis[s] = 1;
+    p[s] = 0;
+    a[s] = inf;
+    queue<int> q;
+    
+    q.push(s);
+    while(!q.empty())
+    {
+        int u = q.front();
+        q.pop();
+        vis[u] = 0;
+        for(int i=0; i< (int)v[u].size(); i++)
+        {
+            Node& g = e[v[u][i]];
+            if(g.cap>g.flow && dis[g.to] > dis[u]+g.cost)
+            {
+                dis[g.to] = dis[u] + g.cost;
+                p[g.to] = v[u][i];  //±£´æÇ°Çý
+                a[g.to] = min(a[u],g.cap-g.flow);
+                if(!vis[g.to])
+                {
+                    q.push(g.to);
+                    vis[g.to]=1;
+                }
+
+            }
+        }
+    }
+    if(dis[t] == inf)
+        return false;
+    flow += a[t];
+    cost += dis[t]*(a[t]);
+    int u = t;
+    while(u!=s)
+    {
+        e[p[u]].flow += a[t];
+        e[p[u]^1].flow -= a[t];
+        u = e[p[u]].from;
+    }
+    return true;
+}
